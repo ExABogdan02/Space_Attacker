@@ -5,8 +5,8 @@
 using namespace std;
 
 int main() {
-    const int screenWidth = 1090;
-    const int screenHeight = 1200;
+    const int screenWidth = 720;
+    const int screenHeight = 1000;
 
     InitWindow(screenWidth, screenHeight, "Space Attacker");
     SetTargetFPS(60);
@@ -66,7 +66,7 @@ int main() {
         if(inamicLovit && !inamic.esteViu()) {
             scor++;
             if(scor % 3 == 0) {
-                vitezaInamic = vitezaInamic + 0.5f;
+                vitezaInamic = vitezaInamic + 1.0f;
             }
 
             inamic = Inamic(
