@@ -18,6 +18,8 @@ int main() {
 
     int razaProiectil = 5;
     NodProiectil* listaProiectile = nullptr;
+    double timpUltimulProiectil = 0;
+    double cooldownProiectil = 0.15;
 
     
     while (!WindowShouldClose()) {
@@ -30,7 +32,7 @@ int main() {
         }
 
         //Tragere proiectil
-        if(IsKeyPressed(KEY_SPACE)){
+        if(IsKeyPressed(KEY_SPACE) && GetTime() - timpUltimulProiectil >= cooldownProiectil){
             Proiectil p(
                 player.getX() + player.getLatime() / 2,
                 player.getY(),
@@ -38,6 +40,7 @@ int main() {
                 true
             );
             adaugaProiectil(listaProiectile, p);
+            timpUltimulProiectil = GetTime();
         }
 
         actualizeazaProiectile(listaProiectile);
