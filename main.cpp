@@ -15,12 +15,14 @@ int main() {
 
     int razaInamic = 20;
     Inamic inamic(GetRandomValue(razaInamic, screenWidth - razaInamic), razaInamic, 2, razaInamic, true);
+    double vitezaInamic = 2.0f;
 
     int razaProiectil = 5;
     NodProiectil* listaProiectile = nullptr;
     double timpUltimulProiectil = 0;
     double cooldownProiectil = 0.15;
 
+    int scor = 0;
     
     while (!WindowShouldClose()) {
         if(IsKeyDown(KEY_LEFT) || IsKeyDown(KEY_A)) {
@@ -59,7 +61,22 @@ int main() {
             inamic = Inamic(GetRandomValue(razaInamic, screenWidth - razaInamic), -razaInamic, 2, razaInamic, true);
         }
 
+        bool inamicLovit = verificaLovituraInamic(listaProiectile, inamic, razaProiectil);
 
+        if(inamicLovit && !inamic.esteViu()) {
+            scor++;
+            if(scor % 3 == 0) {
+                vitezaInamic = vitezaInamic + 0.5f;
+            }
+
+            inamic = Inamic(
+                GetRandomValue(razaInamic, screenWidth - razaInamic),
+                -razaInamic,
+                vitezaInamic,
+                razaInamic,
+                true
+            );
+        }
 
         BeginDrawing();
 
@@ -69,6 +86,32 @@ int main() {
         DrawText("A / Stanga", 20, 55, 18, GRAY);
         DrawText("D / Dreapta", 20, 80, 18, GRAY);
         DrawText("Space / Trage", 20, 105, 18, GRAY);
+
+        //Scor Mijloc Sus
+        const char* textScor = TextFormat("Scor: %d", scor);
+        int fontSizeScor = 25;
+        int latimeTextScor = MeasureText(textScor, fontSizeScor);
+
+        DrawText(
+            textScor,
+            screenWidth / 2 - latimeTextScor / 2,
+            20,
+            fontSizeScor,
+            YELLOW
+        );
+
+        //HP Player
+        DrawText(
+            TextFormat("HP Player: %d", player.getHp()),
+            20, 140, 20, GREEN
+        );
+
+        //HP Inamic
+        DrawText(
+            TextFormat("HP Player: %d", inamic.getHp()),
+            screenWidth - 160,
+            20, 20, RED
+        );
 
         DrawRectangle(
             (int)player.getX(),

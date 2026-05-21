@@ -12,6 +12,6 @@ void adaugaProiectil(NodProiectil*& cap, Proiectil p);
 void actualizeazaProiectile(NodProiectil*& cap);
 void deseneazaProiectile(NodProiectil* cap, int razaProiectil);
 void elibereazaProiectile(NodProiectil*& cap);
-
+bool verificaLovituraInamic(NodProiectil*& cap, Inamic& inamic, int razaProiectil);
 
 #endif

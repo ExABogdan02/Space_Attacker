@@ -61,3 +61,35 @@ void elibereazaProiectile(NodProiectil*& cap){
         delete deSters;
     }
 }
+
+bool verificaLovituraInamic(NodProiectil*& cap, Inamic& inamic, int razaProiectil) {
+    NodProiectil* curent = cap;
+    NodProiectil* anterior = nullptr;
+
+    while(curent != nullptr) {
+        bool lovit = CheckCollisionCircles(
+            Vector2{curent->proiectil.getX(), curent->proiectil.getY() },
+            razaProiectil,
+            Vector2{inamic.getX(), inamic.getY()},
+            inamic.getRaza()
+        );
+
+        if(lovit){
+            inamic.scadeHp(1);
+            NodProiectil* deSters = curent;
+
+            if(anterior == nullptr){
+                cap = curent->urm;
+                curent = cap;
+            } else {
+                anterior->urm = curent->urm;
+                curent = curent->urm;
+            }
+            delete deSters;
+            return true;
+        }
+        anterior = curent;
+        curent = curent->urm;
+    }
+    return false;
+}
