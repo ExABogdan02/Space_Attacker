@@ -4,6 +4,7 @@
 class Jucator {
 private:
     int latime, inaltime;
+    int hp;
     float x, y, viteza;
 
 public:
@@ -15,6 +16,9 @@ public:
     float getViteza();
     int getLatime();
     int getInaltime();
+    int getHp();
+    void scadeHp(int valoare);
+    bool esteViu();
 
     void miscareStanga();
     void miscareDreapta(int screenWidth);
@@ -42,6 +46,7 @@ class Inamic {
 private:
     float x, y, viteza;
     int raza;
+    int hp;
     bool activ;
 
 public:
@@ -53,6 +58,9 @@ public:
     float getViteza();
     int getRaza();
     bool getActiv();
+    int getHp();
+    void scadeHp(int valoare);
+    bool esteViu();
 
     void misca();
     void dezactiveaza();

@@ -6,6 +6,7 @@ Jucator::Jucator(int latime, int inaltime, float x, float y, float viteza) {
     this->x = x;
     this->y = y;
     this->viteza = viteza;
+    this->hp = 4;
 }
 
 Proiectil::Proiectil(float x, float y, float viteza, bool activ) {
@@ -21,6 +22,7 @@ Inamic::Inamic(float x, float y, float viteza, int raza, bool activ) {
     this->viteza = viteza;
     this->raza = raza;
     this->activ = activ;
+    this->hp = 1;
 }
 
 
@@ -40,6 +42,9 @@ int Jucator::getLatime() {
 }
 int Jucator::getInaltime() {
     return inaltime;
+}
+int Jucator::getHp() {
+    return hp;
 }
 
 // Get pentru proiectil.
@@ -74,6 +79,9 @@ int Inamic::getRaza() {
 bool Inamic::getActiv() {
     return activ;
 }
+int Inamic::getHp() {
+    return hp;
+}
 
 
 void Jucator::miscareStanga() {
@@ -87,6 +95,18 @@ void Jucator::miscareDreapta(int screenWidth) {
     if(x + latime + viteza <= screenWidth) {
         x = x + viteza;
     }
+}
+
+void Jucator::scadeHp(int valoare) {
+    hp = hp - valoare;
+
+    if(hp < 0) {
+        hp = 0;
+    }
+}
+
+bool Jucator::esteViu() {
+    return hp > 0;
 }
 
 
@@ -104,3 +124,14 @@ void Inamic::misca() {
 void Inamic::dezactiveaza() {
     activ = false;
 }
+void Inamic::scadeHp(int valoare) {
+    hp = hp - valoare;
+
+    if(hp < 0) {
+        hp = 0;
+    }
+}
+bool Inamic::esteViu() {
+    return hp > 0;
+}
+
