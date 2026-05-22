@@ -7,6 +7,6 @@ Future updates will include different enemy types, boss fights, multiple enemies
 
 ## Requirements
 
--C++ Compiler
--Raylib
+- C++ Compiler
+- Raylib
 
