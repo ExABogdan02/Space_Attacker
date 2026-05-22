@@ -23,51 +23,15 @@ int main() {
     double cooldownProiectil = 0.15;
 
     int scor = 0;
+    bool gameOver = false;
     
     while (!WindowShouldClose()) {
-        if(IsKeyDown(KEY_LEFT) || IsKeyDown(KEY_A)) {
-            player.miscareStanga();
-        }
+        if (gameOver && IsKeyPressed(KEY_R)) {
+            scor = 0;
+            vitezaInamic = 2.0f;
+            gameOver = false;
 
-        if(IsKeyDown(KEY_RIGHT) || IsKeyDown(KEY_D)) {
-            player.miscareDreapta(screenWidth);
-        }
-
-        //Tragere proiectil
-        if(IsKeyPressed(KEY_SPACE) && GetTime() - timpUltimulProiectil >= cooldownProiectil){
-            Proiectil p(
-                player.getX() + player.getLatime() / 2,
-                player.getY(),
-                8,
-                true
-            );
-            adaugaProiectil(listaProiectile, p);
-            timpUltimulProiectil = GetTime();
-        }
-
-        actualizeazaProiectile(listaProiectile);
-
-        //Miscare inamic
-        inamic.misca();
-
-        if(inamic.getY() - inamic.getRaza() > screenHeight) {
-            inamic = Inamic(GetRandomValue(razaInamic, screenWidth - razaInamic), -razaInamic, 2, razaInamic, true);
-        }
-
-
-        Rectangle playerRect = {player.getX(), player.getY(), (float)player.getLatime(), (float)player.getInaltime()};
-
-        if(CheckCollisionCircleRec(Vector2{inamic.getX(), inamic.getY()}, inamic.getRaza(), playerRect)) {
-            inamic = Inamic(GetRandomValue(razaInamic, screenWidth - razaInamic), -razaInamic, 2, razaInamic, true);
-        }
-
-        bool inamicLovit = verificaLovituraInamic(listaProiectile, inamic, razaProiectil);
-
-        if(inamicLovit && !inamic.esteViu()) {
-            scor++;
-            if(scor % 3 == 0) {
-                vitezaInamic = vitezaInamic + 1.0f;
-            }
+            player = Jucator(70, 30, screenWidth / 2 - 35, screenHeight - 70, 6);
 
             inamic = Inamic(
                 GetRandomValue(razaInamic, screenWidth - razaInamic),
@@ -76,42 +40,118 @@ int main() {
                 razaInamic,
                 true
             );
+            elibereazaProiectile(listaProiectile);
+        }
+
+        if(!gameOver) {
+            //Miscare player
+            if(IsKeyDown(KEY_LEFT) || IsKeyDown(KEY_A)) {
+                player.miscareStanga();
+            }
+            if(IsKeyDown(KEY_RIGHT) || IsKeyDown(KEY_D)) {
+                player.miscareDreapta(screenWidth);
+            }
+            //Tragere
+            if(IsKeyPressed(KEY_SPACE) && GetTime() - timpUltimulProiectil >= cooldownProiectil) {
+                Proiectil p(
+                    player.getX() + player.getLatime() / 2,
+                    player.getY(),
+                    8,
+                    true
+                );
+
+                adaugaProiectil(listaProiectile, p);
+                timpUltimulProiectil = GetTime();
+            }
+
+            //Actualizare proiectile
+            actualizeazaProiectile(listaProiectile);
+            //Miscare inamic
+            inamic.misca();
+
+            //Daca inamicul trece de limita de jos al ecranului
+            if(inamic.getY() - inamic.getRaza() > screenHeight) {
+                player.scadeHp(1);
+
+                if(!player.esteViu()) {
+                    gameOver = true;
+                } else {
+                    inamic = Inamic(
+                        GetRandomValue(razaInamic, screenWidth - razaInamic),
+                        -razaInamic,
+                        vitezaInamic,
+                        razaInamic,
+                        true
+                    );
+                }
+            }
+
+            //Hitbox player
+            Rectangle playerHitbox = {
+                player.getX(),
+                player.getY(),
+                (float)player.getLatime(),
+                (float)player.getInaltime()
+            };
+
+            //Coliziune pentru player si inamic
+            if(!gameOver && CheckCollisionCircleRec(
+                Vector2{inamic.getX(), inamic.getY()},
+                inamic.getRaza(),
+                playerHitbox
+            )){
+                player.scadeHp(1);
+
+                if (!player.esteViu()) {
+                    gameOver = true;
+                } else {
+                    inamic = Inamic(
+                        GetRandomValue(razaInamic, screenWidth - razaInamic),
+                        -razaInamic,
+                        vitezaInamic,
+                        razaInamic,
+                        true
+                    );
+                }
+            }
+
+            //Coliziune player-inamic
+            if(!gameOver) {
+                bool inamiclovit = verificaLovituraInamic(listaProiectile, inamic, razaProiectil);
+
+                if(inamiclovit && !inamic.esteViu()) {
+                    scor++;
+
+                    if(scor % 3 == 0) {
+                        vitezaInamic = vitezaInamic + 0.5f;
+                    }
+
+                    inamic = Inamic(
+                        GetRandomValue(razaInamic, screenWidth - razaInamic),
+                        -razaInamic,
+                        vitezaInamic,
+                        razaInamic,
+                        true
+                    );
+                }
+
+            }
+
         }
 
         BeginDrawing();
 
         ClearBackground(BLACK);
 
-        DrawText("Space Attacker", 20, 20, 24, RAYWHITE);
-        DrawText("A / Stanga", 20, 55, 18, GRAY);
-        DrawText("D / Dreapta", 20, 80, 18, GRAY);
-        DrawText("Space / Trage", 20, 105, 18, GRAY);
-
-        //Scor Mijloc Sus
-        const char* textScor = TextFormat("Scor: %d", scor);
-        int fontSizeScor = 25;
-        int latimeTextScor = MeasureText(textScor, fontSizeScor);
-
-        DrawText(
-            textScor,
-            screenWidth / 2 - latimeTextScor / 2,
-            20,
-            fontSizeScor,
-            YELLOW
-        );
-
+        DrawText("Space Attacker", 200, 15, 30, RED);
+        DrawText("A / Left", 20, 20, 20, GRAY);
+        DrawText("D / Right", 20, 40, 20, GRAY);
+        DrawText("Space / Fire", 20, 60, 20, GRAY);
+        DrawText(TextFormat("Score: %d", scor), 600, 10, 25, YELLOW);
         //HP Player
-        DrawText(
-            TextFormat("HP Player: %d", player.getHp()),
-            20, 140, 20, GREEN
-        );
+        DrawText(TextFormat("HP Player: %d", player.getHp()),20, 100, 20, GREEN);
 
-        //HP Inamic
-        DrawText(
-            TextFormat("HP Player: %d", inamic.getHp()),
-            screenWidth - 160,
-            20, 20, RED
-        );
+
 
         DrawRectangle(
             (int)player.getX(),
@@ -129,6 +169,32 @@ int main() {
         );
 
         deseneazaProiectile(listaProiectile, razaProiectil);
+
+        if(gameOver) {
+            const char* gameOverText = "GAME OVER";
+            int gameOverFontSize = 60;
+            int gameOverTextWidth = MeasureText(gameOverText, gameOverFontSize);
+
+            DrawText(
+                gameOverText,
+                screenWidth / 2 - gameOverTextWidth / 2,
+                screenHeight / 2 - 80,
+                gameOverFontSize,
+                RED
+            );
+
+            const char* restartText = "Press R to restart";
+            int restartFontSize = 28;
+            int restartTextWidth = MeasureText(restartText, restartFontSize);
+
+            DrawText(
+                restartText,
+                screenWidth / 2 - restartTextWidth / 2,
+                screenHeight / 2,
+                restartFontSize,
+                RAYWHITE
+            );
+        }
 
         EndDrawing();
     }
